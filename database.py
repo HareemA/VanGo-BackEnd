@@ -500,5 +500,3 @@ def get_bus_ID():
     except (Exception, psycopg2.DatabaseError) as error:
         print("Could not truncate child table", error)
 
-
-create_tables()
