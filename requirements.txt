@@ -1,0 +1,15 @@
+ultralytics
+opencv-python
+openpyxl
+pandas
+pytube
+psycopg2-binary
+Flask
+face_recognition
+Pillow
+numpy
+reportlab
+requests
+geocoder
+pyfcm
+stripe
