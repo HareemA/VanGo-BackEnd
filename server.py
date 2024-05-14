@@ -39,11 +39,11 @@ tokens = {}
 app = Flask(__name__)
 
 awsconn = psycopg2.connect(
-    host="localhost",
+    host="dpg-cp1puouct0pc73d68r70-a.oregon-postgres.render.com",
     port="5432",
-    dbname="VanGo",
-    user="postgres",
-    password="12345"
+    dbname="vango",
+    user="vango_user",
+    password="RNqJ7yync1oeqs6JvJJDDHurA15Ol1zQ"
 )
 
 #live stream API
