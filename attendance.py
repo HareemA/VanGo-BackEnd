@@ -6,8 +6,6 @@ from openpyxl import Workbook
 import pandas as pd
 from openpyxl import load_workbook
 from pytube import YouTube
-import pafy
-import yt_dlp
 from server import *
 #try using pafy for live
 
