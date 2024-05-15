@@ -1,7 +1,7 @@
 import cv2
 import requests
 
-server_ip = "192.168.18.220"  # Replace with the server laptop IP address
+server_ip = "147.182.229.215"  # Replace with the server laptop IP address
 #server_ip = "192.168.100.10"  # Replace with the server laptop IP address
 channel_name = "f8b95fae-2437-4106-b0bd-a53f12b377ce" # Replace with the desired channel name Camera ID
 

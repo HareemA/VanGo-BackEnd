@@ -323,17 +323,17 @@ def retrieve_payment_stat(child_id):
           "Askari 7": {
             "APS Humayun": "10000",
             "APS Ordnance": "10500",
-            "PS FortRoad": "11000",
+            "APS FortRoad": "11000",
           },
           "Askari 14": {
             "APS Humayun": "13500",
             "APS Ordnance": "12000",
-            "PS FortRoad": "14500",
+            "APS FortRoad": "14500",
           },
           "Askari 13": {
             "APS Humayun": "14500",
             "APS Ordnance": "13000",
-            "PS FortRoad": "12500",
+            "APS FortRoad": "12500",
           },
         }
 
@@ -588,17 +588,22 @@ def video_feed_leave():
         return 'This endpoint only accepts POST requests.', 405
     
 
-stop_event_enter = threading.Event()
+@app.route("/update_url", methods=["POST"])
+def update_url():
+    try:
+        data = request.json
+        yt_url = data['url']
+        with awsconn.cursor() as cur:
+                cur.execute("UPDATE camera SET url = %s", (yt_url,))
 
-def attendance_thread_enter(stop_event):
-    while not stop_event.is_set():
-        attendance_enter()
+        awsconn.commit()
+        return 'URL updated successfully.'
 
-stop_event_leave = threading.Event()
+    except Exception as e:
+        print("Exception ",e)
+        return 'URL not updated successfully.'
 
-def attendance_thread_leave(stop_event):
-    while not stop_event.is_set():
-        attendance_leave()
+    
 
 if __name__ == "__main__":
 
