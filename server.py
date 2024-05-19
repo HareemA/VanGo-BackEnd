@@ -205,6 +205,22 @@ def store_picture(picture, child_id):  # Modify the function to use child_id ins
 
     return picture_path, encoding
 
+def edit_picture(new_picture, child_id):
+    # Check if the folder for the child exists
+    folder_path = os.path.join(TRAINING_PATH, str(child_id))
+    if os.path.exists(folder_path):
+        # Delete the existing picture if it exists
+        existing_picture_path = os.path.join(folder_path, f"{str(child_id)}.jpg")
+        if os.path.exists(existing_picture_path):
+            os.remove(existing_picture_path)
+        
+        # Write the new picture to the folder
+        os.makedirs(folder_path, exist_ok=True)
+        new_picture_path = os.path.join(folder_path, f"{str(child_id)}.jpg")
+        with open(new_picture_path, "wb") as f:
+            f.write(new_picture)
+
+
 #REGISTER CHILD
 @app.route("/register_child", methods=["POST"])    
 def register_child():
@@ -295,6 +311,41 @@ def register_child():
         return jsonify({'error': 'Failed to register child.', 'details': str(error)}), 500
     
 
+@app.route("/edit_child", methods=["POST"])    
+def edit_child():
+    try:
+
+        child_data_json = request.form.get("childData")
+
+        # Convert JSON string to Python dictionary
+        data = json.loads(child_data_json)
+        child_id = data.get('child_id')
+        pickup_loc = data.get('pickUpLoc')
+        dropoff_loc = data.get('dropOffLoc')
+        pic = data.get('picture')
+        picture = base64.b64decode(pic)
+
+        if pickup_loc:
+            with awsconn, awsconn.cursor() as cur:
+                cur.execute("update child set pickup_loc= %s where id=%s",(pickup_loc, child_id))
+                print("Pickup updated")
+
+        if dropoff_loc:
+            with awsconn, awsconn.cursor() as cur:
+                cur.execute("update child set dropoff_loc= %s where id=%s",(dropoff_loc, child_id))
+                print("Dropoff updated")
+
+        if picture:
+            edit_picture(picture, child_id)
+            print("Picture edited")
+
+        
+        return jsonify({'success':'data edited sucessfully'}),200
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Could not register child", error)
+        return jsonify({'error': 'Failed to register child.', 'details': str(error)}), 500
+    
 
 
 #API for getting Payment Status, Pickup Loc and DropOff Loc
