@@ -334,7 +334,7 @@ def edit_child():
             with awsconn, awsconn.cursor() as cur:
                 cur.execute("update child set dropoff_loc= %s where id=%s",(dropoff_loc, child_id))
                 print("Dropoff updated")
-
+        
         if picture:
             edit_picture(picture, child_id)
             print("Picture edited")
