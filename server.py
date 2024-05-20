@@ -573,6 +573,98 @@ def get_child_picture(picture_path):
         print("Error:", error)
         return jsonify({'message': 'Couldn\'t get child picture!'}), 500
     
+
+#new ones 
+@app.route("/get_automatic_login_credentials/<string:parent_id>", methods=["POST"])
+def get_automatic_login_credentials(parent_id):  
+    try:
+        with awsconn, awsconn.cursor() as cur:
+            # Execute SQL query
+            cur.execute("SELECT email, password FROM parent WHERE id = %s;", (parent_id,))
+            parent_credentials = cur.fetchone()
+
+            if parent_credentials:
+                # Return the result
+                return jsonify({"email": parent_credentials[0], "password": parent_credentials[1]}), 200
+            else:
+                # Return a message if no data found
+                return jsonify({"message": "No parent found with ID: {}".format(parent_id)}), 404
+
+    except (Exception, psycopg2.DatabaseError) as error:
+        # Handle errors
+        print("Error fetching parent credentials:", error)
+        return jsonify({"message": "Error fetching parent credentials"}), 500
+  
+
+@app.route("/get_child_data_for_unregister/<child_id>", methods=["POST"])
+def get_child_data_for_unregister(child_id):
+    try:
+         
+        # Use the existing cursor
+        with awsconn.cursor() as cur:
+            # Execute the query
+            cur.execute("""SELECT parent.email, parent.password, child.name, child.payment_stat
+                FROM parent
+                JOIN child ON parent.id = child.parent_id
+                WHERE child.id = %s""", (child_id,))
+            
+            # Fetch the result
+            result = cur.fetchone()
+        
+        # Check if child data exists
+        if not result:
+            return jsonify({"error": "Child data not found."}), 404
+        
+        # Extract payment status, pickup location, and dropoff location
+        email, password, child_name, payment_stat = result
+
+        return jsonify({
+            "email": email,
+            "password": password,
+            "childName": child_name,
+            "paymentStat": payment_stat,
+        }), 200
+    
+    
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Error processing request:", error)
+        return jsonify({'error': 'Failed to retrieve child data.', 'details': str(error)}), 500
+    
+
+@app.route('/unregister_child/<string:child_id>', methods=["GET"])
+def unregister_child(child_id):
+    try:
+        # Use the existing cursor
+        with awsconn.cursor() as cur:
+            # Check if the child record exists
+            cur.execute("SELECT id FROM child WHERE id = %s", (child_id,))
+            result = cur.fetchone()
+
+            if not result:
+                return jsonify({"error": "Child not found."}), 404
+
+            # Execute the deletion query
+            cur.execute("DELETE FROM child WHERE id = %s", (child_id,))
+            awsconn.commit()
+
+        # Construct the folder path for the child's pictures
+        PICTURE_FOLDER_PATH = './training'
+        child_folder_path = os.path.join(PICTURE_FOLDER_PATH, child_id)
+
+        # Check if the folder exists and delete it
+        if os.path.exists(child_folder_path) and os.path.isdir(child_folder_path):
+            shutil.rmtree(child_folder_path)
+
+        return jsonify({"message": f"Child ID {child_id} unregistered successfully."}), 200
+
+    except psycopg2.DatabaseError as db_error:
+        print("Database error occurred:", db_error)
+        return jsonify({'error': 'Failed to unregister child.', 'details': str(db_error)}), 500
+    
+    except Exception as error:
+        print("Error occurred:", error)
+        return jsonify({'error': 'An unexpected error occurred.', 'details': str(error)}), 500
+    
     
 from datetime import time
 
