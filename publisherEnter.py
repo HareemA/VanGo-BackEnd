@@ -23,9 +23,4 @@ while True:
         if response.status_code != 200:
             print("Error sending frame to server.")
 
-    # Exit the loop when 'q' key is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
 
-video.release()
-cv2.destroyAllWindows()
