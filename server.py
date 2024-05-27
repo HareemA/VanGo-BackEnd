@@ -219,6 +219,9 @@ def edit_picture(new_picture, child_id):
         new_picture_path = os.path.join(folder_path, f"{str(child_id)}.jpg")
         with open(new_picture_path, "wb") as f:
             f.write(new_picture)
+            return True
+
+    return False
 
 
 #REGISTER CHILD
@@ -335,11 +338,13 @@ def edit_child():
                 cur.execute("update child set dropoff_loc= %s where id=%s",(dropoff_loc, child_id))
                 print("Dropoff updated")
         
+        stat = False
+        print("Picture: ", picture)
         if picture:
-            edit_picture(picture, child_id)
+            stat = edit_picture(picture, child_id)
             print("Picture edited")
 
-        
+        print(stat)
         return jsonify({'success':'data edited sucessfully'}),200
 
     except (Exception, psycopg2.DatabaseError) as error:

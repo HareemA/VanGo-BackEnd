@@ -13,3 +13,4 @@ requests
 geocoder
 pyfcm
 stripe
+setuptools
