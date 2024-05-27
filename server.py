@@ -339,7 +339,7 @@ def edit_child():
                 print("Dropoff updated")
         
         stat = False
-        print("Picture: ", picture)
+        
         if picture:
             stat = edit_picture(picture, child_id)
             print("Picture edited")
