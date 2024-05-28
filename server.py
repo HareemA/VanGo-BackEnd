@@ -23,7 +23,7 @@ from openpyxl import Workbook
 import pandas as pd
 from openpyxl import load_workbook
 import stripe
-
+from flask_cors import CORS
 
 stripe.api_key = "sk_test_51P1Y69P5S3CJSYDgLH0TmWxQ8lys8yzXSRppa2W79pxvi6hObYbhbw28WehDjdS1xxvECzPSkY6RZyYUKIqOkDdB0011ybJtsX"
 from attendance import *
@@ -37,6 +37,7 @@ tokens = {}
 
 
 app = Flask(__name__)
+CORS(app)
 
 awsconn = psycopg2.connect(
     host="dpg-cp1puouct0pc73d68r70-a.oregon-postgres.render.com",
